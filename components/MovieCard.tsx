@@ -4,9 +4,13 @@ import { DateTime } from "luxon";
 
 export type MovieProps = {
   movie: Movie;
+  commentCount?: number;
 };
 
-export const MovieCard: React.FC<MovieProps> = ({ movie }) => {
+export const MovieCard: React.FC<MovieProps> = ({
+  movie,
+  commentCount = 0,
+}) => {
   return (
     <div className="group relative shadow-lg rounded-lg overflow-hidden bg-white">
       <div className="aspect-h-1 aspect-w-1 w-full overflow-hidden bg-gray-200 lg:aspect-none group-hover:opacity-75 lg:h-80">
@@ -17,6 +21,9 @@ export const MovieCard: React.FC<MovieProps> = ({ movie }) => {
             className="h-full w-full object-cover object-center lg:h-full lg:w-full"
           />
         )}
+      </div>
+      <div className="text-right text-sm text-gray-500 py-2 px-4">
+        {`${commentCount} ${commentCount === 1 ? "Kommentar" : "Kommentare"}`}
       </div>
       <div className="flex flex-col justify-between p-4 gap-2">
         <div>
