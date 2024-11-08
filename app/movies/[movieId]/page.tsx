@@ -1,5 +1,8 @@
+import { notFound } from "next/navigation";
 import { getMovie } from "../movies";
 import Link from "next/link";
+import { getComments } from "../comments";
+import { CommentsOverview } from "@/components/CommentsOverview";
 
 type MovieParams = {
   movieId: string;
@@ -13,13 +16,19 @@ export default async function MovieById({ params }: MovieProps) {
   const { movieId } = await params;
   const movie = await getMovie(movieId);
 
+  if (!movie) {
+    return notFound();
+  }
+
+  const comments = await getComments(movieId);
+
   return (
     <div className="p-6 bg-gray-100 min-h-screen">
-      <h1 className="text-3xl font-bold p-6 text-center">{movie?.title}</h1>
+      <h1 className="text-3xl font-bold p-6 text-center">{movie.title}</h1>
 
       <div className="flex bg-white m-5 p-5 shadow-xl">
         <div className="flex-none w-60">
-          {movie?.poster ? (
+          {movie.poster ? (
             <img
               src={movie.poster}
               alt={movie.title}
@@ -35,28 +44,31 @@ export default async function MovieById({ params }: MovieProps) {
         <div>
           <div className="grid grid-cols-[1fr_3fr]">
             <p className="font-bold">Veröffentlichung:</p>
-            <p>{movie?.year}</p>
+            <p>{movie.year}</p>
             <p className="font-bold">Länge:</p>
-            <p>{movie?.runtime} Minuten</p>
+            <p>{movie.runtime} Minuten</p>
             <p className="font-bold">Geschichte (eng):</p>
-            <p>{movie?.fullplot}</p>
+            <p>{movie.fullplot}</p>
             <p className="font-bold">Regisseur:</p>
-            <p>{movie?.directors.join(", ")}</p>
+            <p>{movie.directors.join(", ")}</p>
             <p className="font-bold">Besetzung:</p>
-            <p>{movie?.cast?.join(", ")}</p>
+            <p>{movie.cast?.join(", ")}</p>
             <p className="font-bold">Genre:</p>
-            <p>{movie?.genres?.join(", ")}</p>
+            <p>{movie.genres?.join(", ")}</p>
             <p className="font-bold">Sprache:</p>
-            <p>{movie?.languages?.join(", ")}</p>
+            <p>{movie.languages?.join(", ")}</p>
             <p className="font-bold">Land:</p>
-            <p>{movie?.countries.join(", ")}</p>
+            <p>{movie.countries.join(", ")}</p>
             <p className="font-bold">Auszeichnungen:</p>
-            <p>{movie?.awards?.text}</p>
+            <p>{movie.awards?.text}</p>
             <p className="font-bold">IMDB Bewertung:</p>
-            <p>{movie?.imdb?.rating}</p>
+            <p>{movie.imdb?.rating}</p>
           </div>
         </div>
       </div>
+
+      <CommentsOverview comments={comments} className="mx-5" />
+
       <div className="text-center mt-5">
         <Link
           href="/movies"
