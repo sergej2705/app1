@@ -7,11 +7,35 @@ import { z } from "zod";
 const MovieType = z.object({
   _id: z.instanceof(ObjectId),
   plot: z.string().optional(),
-  genres: z.string().array().optional(),
+  genres: z.array(z.string()).optional(),
   poster: z.string().optional(),
   title: z.string(),
   fullplot: z.string().optional(),
+  year: z.number(),
+  runtime: z.number(),
+  cast: z.array(z.string()).optional(),
   released: z.date().optional(),
+  directors: z.array(z.string()),
+  writers: z.array(z.string()).optional(),
+  awards: z
+    .object({
+      wins: z.number(),
+      nominations: z.number(),
+      text: z.string(),
+    })
+    .optional(),
+  lastupdated: z.string(),
+  type: z.string(),
+  countries: z.array(z.string()),
+  languages: z.array(z.string()).optional(),
+  rated: z.string().optional(),
+  imdb: z
+    .object({
+      rating: z.number(),
+      votes: z.number(),
+      id: z.number(),
+    })
+    .optional(),
 });
 
 export type Movie = z.infer<typeof MovieType>;

@@ -1,4 +1,4 @@
-import { MovieDetails } from "@/components/MovieDetails";
+import { MovieCard } from "@/components/MovieCard";
 import { getMovies, Movie } from "./movies";
 
 export default async function Movies() {
@@ -11,7 +11,7 @@ export default async function Movies() {
       </h2>
       <div className="mt-6 grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-4 xl:gap-x-8">
         {movies.map((movie) => (
-          <MovieDetails key={movie._id.toString()} movie={movie} />
+          <MovieCard key={movie._id.toString()} movie={movie} />
         ))}
       </div>
     </div>

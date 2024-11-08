@@ -6,7 +6,7 @@ export type MovieProps = {
   movie: Movie;
 };
 
-export const MovieDetails: React.FC<MovieProps> = ({ movie }) => {
+export const MovieCard: React.FC<MovieProps> = ({ movie }) => {
   return (
     <div className="group relative shadow-lg rounded-lg overflow-hidden bg-white">
       <div className="aspect-h-1 aspect-w-1 w-full overflow-hidden bg-gray-200 lg:aspect-none group-hover:opacity-75 lg:h-80">
