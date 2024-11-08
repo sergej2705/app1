@@ -1,25 +1,33 @@
-import { MovieCard } from "@/components/MovieCard";
+import { MoviesOverview } from "@/components/MoviesOverview";
 import { getCommentCounts } from "./comments";
+import { getGenres } from "./genres";
 import { getMovies } from "./movies";
 
-export default async function Movies() {
-  const movies = await getMovies();
-  const commentsByMovie = await getCommentCounts();
+type MoviesProps = {
+  searchParams: Promise<{
+    genre?: string;
+  }>;
+};
+
+export default async function Movies({ searchParams }: MoviesProps) {
+  const { genre } = await searchParams;
+  const movies = await getMovies(genre);
+
+  const movieIds: Parameters<typeof getCommentCounts>[0] = movies.map(
+    (movie) => movie._id
+  );
+
+  const allGenres = await getGenres();
+
+  const commentsByMovie: Awaited<ReturnType<typeof getCommentCounts>> =
+    await getCommentCounts(movieIds);
 
   return (
-    <div className="mx-auto max-w-2xl px-4 py-16 sm:px-6 sm:py-24 lg:max-w-7xl lg:px-8">
-      <h2 className="text-2xl font-bold tracking-tight text-gray-900">
-        Filmempfehlungen
-      </h2>
-      <div className="mt-6 grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-4 xl:gap-x-8">
-        {movies.map((movie) => (
-          <MovieCard
-            key={movie._id.toString()}
-            movie={movie}
-            commentCount={commentsByMovie[movie._id.toString()]}
-          />
-        ))}
-      </div>
-    </div>
+    <MoviesOverview
+      movies={movies}
+      commentsByMovie={commentsByMovie}
+      allGenres={allGenres}
+      defaultGenre={genre}
+    />
   );
 }

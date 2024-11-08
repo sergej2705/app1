@@ -1,6 +1,6 @@
 import { Movie } from "@/app/movies/movies";
-import Link from "next/link";
 import { DateTime } from "luxon";
+import Link from "next/link";
 
 export type MovieProps = {
   movie: Movie;

@@ -1,3 +1,5 @@
+"use client";
+
 import { Comment } from "@/app/movies/comments";
 import { DateTime } from "luxon";
 import { FC } from "react";

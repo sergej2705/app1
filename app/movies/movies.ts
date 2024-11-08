@@ -5,14 +5,14 @@ import { ObjectId } from "mongodb";
 import { z } from "zod";
 
 const MovieType = z.object({
-  _id: z.instanceof(ObjectId),
+  _id: z.coerce.string(),
   plot: z.string().optional(),
   genres: z.array(z.string()).optional(),
   poster: z.string().optional(),
   title: z.string(),
   fullplot: z.string().optional(),
   year: z.number(),
-  runtime: z.number(),
+  runtime: z.number().optional(),
   cast: z.array(z.string()).optional(),
   released: z.date().optional(),
   directors: z.array(z.string()),
@@ -31,8 +31,8 @@ const MovieType = z.object({
   rated: z.string().optional(),
   imdb: z
     .object({
-      rating: z.number(),
-      votes: z.number(),
+      rating: z.union([z.number(), z.string()]),
+      votes: z.union([z.number(), z.string()]),
       id: z.number(),
     })
     .optional(),
@@ -42,7 +42,7 @@ export type Movie = z.infer<typeof MovieType>;
 
 const MoviesType = z.array(MovieType);
 
-export const getMovies = async (): Promise<Movie[]> => {
+export const getMovies = async (genre?: string): Promise<Movie[]> => {
   const mongoClient = await client.connect();
 
   try {
@@ -50,7 +50,10 @@ export const getMovies = async (): Promise<Movie[]> => {
 
     const maybeMovies = await db
       .collection("movies")
-      .find({ released: { $exists: true } })
+      .find({
+        released: { $exists: true },
+        ...(genre ? { genres: genre } : {}),
+      })
       .sort({ released: -1 })
       .limit(12)
       .toArray();

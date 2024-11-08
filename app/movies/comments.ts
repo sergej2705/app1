@@ -16,7 +16,7 @@ export type Comment = z.infer<typeof CommentType>;
 const CommentsType = z.array(CommentType);
 
 const CommentCount = z.object({
-  _id: z.instanceof(ObjectId),
+  _id: z.coerce.string(),
   count: z.number(),
 });
 
@@ -42,9 +42,9 @@ export const getComments = async (movieId: string): Promise<Comment[]> => {
   }
 };
 
-export const getCommentCounts = async (): Promise<
-  Partial<Record<string, number>>
-> => {
+export const getCommentCounts = async (
+  movieIds: string[]
+): Promise<Partial<Record<string, number>>> => {
   const mongoClient = await client.connect();
 
   try {
@@ -53,6 +53,13 @@ export const getCommentCounts = async (): Promise<
     const maybeCommentsByMovie = await db
       .collection("comments")
       .aggregate([
+        {
+          $match: {
+            movie_id: {
+              $in: movieIds.map((id) => new ObjectId(id)),
+            },
+          },
+        },
         {
           $group: { _id: "$movie_id", count: { $sum: 1 } },
         },
@@ -64,20 +71,23 @@ export const getCommentCounts = async (): Promise<
     const result = commentsByMovie
       .map(
         (commentCount): Record<string, number> => ({
-          [commentCount._id.toString()]: commentCount.count,
+          [commentCount._id]: commentCount.count,
         })
       )
-      .reduce((prev, curr) => ({
-        ...prev,
-        ...curr,
-      }));
+      .reduce(
+        (prev, curr) => ({
+          ...prev,
+          ...curr,
+        }),
+        {}
+      );
 
     // alternativ
     /*
     const result = Object.fromEntries(commentsByMovie
       .map(
         (commentCount) =>
-          [commentCount._id.toString(), commentCount.count] as const
+          [commentCount._id, commentCount.count] as const
       ));
     */
 
